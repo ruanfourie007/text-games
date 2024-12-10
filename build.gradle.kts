@@ -32,7 +32,7 @@ tasks.withType<KotlinCompile> {
 }
 
 application {
-    mainClass.set("org.ruanf.MainKt")
+    mainClass.set("org.ruanf.games.MainKt")
 }
 
 tasks.withType<Jar>() {
@@ -40,6 +40,6 @@ tasks.withType<Jar>() {
         from(zipTree(file.absoluteFile))
     }
     manifest {
-        attributes["Main-Class"] = "org.ruanf.MainKt"
+        attributes["Main-Class"] = "org.ruanf.games.MainKt"
     }
 }

@@ -1,6 +1,6 @@
 package org.ruanf.games.anagrams
 
-import org.ruanf.Game
+import org.ruanf.games.Game
 import kotlin.system.exitProcess
 
 class AnagramGame: Game {
