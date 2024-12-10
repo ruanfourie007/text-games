@@ -1,22 +1,23 @@
-# text-games
+# Text Games
 A CLI application for text based games.
 
-# Anagrams
+## Anagrams
 ![App Screenshot](app-screenshot.png?raw=true "App Screenshot")
+
 The anagrams game has two inputs, the subject and anagram to test against the subject.
 
 To close the application, simply press enter with no inputs.
 
-# Tests
+### Tests
 > ./gradlew test
 
-# Code Checks
+### Code Checks
 > ./gradlew detekt
 
-# Build
+### Build
 > ./gradlew build
 
-# Running
+### Running
 Run using gradle
 > ./gradlew run --console=plain --quiet
 
