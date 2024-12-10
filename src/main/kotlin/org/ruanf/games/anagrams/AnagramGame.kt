@@ -4,65 +4,68 @@ import org.ruanf.Game
 import kotlin.system.exitProcess
 
 class AnagramGame: Game {
+    private var previousPhrase = ""
 
     override fun title(): String {
         return "${Emojis.books} Anagram Checker ${Emojis.books}".inCyan()
     }
 
     override fun run() {
-        var previousPhrase = ""
 
         while (true) {
-
-            if (previousPhrase.isBlank()) {
-                print("Enter the subject:")
-            } else {
-                print("Enter an anagram of ${previousPhrase.inBold()}:")
-            }
-
-            val phrase = AnagramService.sanitizePhrase(readln())
-
             try {
-                AnagramService.validatePhrase(phrase)
+                inputLoop()
             } catch (exception: IllegalArgumentException) {
                 println("Whoops, something went wrong: ".inCyan())
                 println(exception.message?.inRed())
-                continue
             }
+        }
+    }
 
-            if (phrase.isEmpty()) {
-                if (previousPhrase.isEmpty()) {
-                    println("Thanks for playing!".inCyan())
-                    exitProcess(0)
-                }
-                previousPhrase = ""
-                continue
+    private fun inputLoop() {
+        if (previousPhrase.isBlank()) {
+            print("Enter the subject:")
+        } else {
+            print("Enter an anagram of ${previousPhrase.inBold()}:")
+        }
+
+        val phrase = AnagramService.sanitizePhrase(readln())
+        AnagramService.validatePhrase(phrase)
+
+        if (phrase.isEmpty()) {
+            if (previousPhrase.isEmpty()) {
+                println("Thanks for playing!".inCyan())
+                exitProcess(0)
             }
+            previousPhrase = ""
+            return
+        }
 
-            if (phrase == previousPhrase) continue
+        if (phrase == previousPhrase) return
 
-            val subject = Subject(phrase)
+        val subject = Subject(phrase)
 
-            AnagramService.addToHistory(subject)
+        AnagramService.addToHistory(subject)
 
-            val anagrams = AnagramService.getAnagramsOfSubject(subject)
+        val anagrams = AnagramService.getAnagramsOfSubject(subject)
 
-            if (previousPhrase.isNotEmpty() && anagrams.contains(previousPhrase)) {
-                val otherPhrases = anagrams.filter { it != previousPhrase }
-                if (otherPhrases.isEmpty()) {
-                    println("${phrase.inGreen()} is an anagram of ${previousPhrase.inGreen()} ${Emojis.party}")
-                } else {
-                    println("${phrase.inGreen()} is an anagram of ${previousPhrase.inGreen()} as well as (${otherPhrases.joinToString(separator = ";").inGreen()}) entered earlier ${Emojis.party}")
-                }
-            } else if (anagrams.isNotEmpty()) {
-                println("${phrase.inGreen()} is an anagram of (${anagrams.joinToString(separator = ";").inGreen()}) entered earlier ${Emojis.party}")
-            } else if (previousPhrase.isNotEmpty()) {
-                println("${phrase.inRed()} is not an anagram of ${previousPhrase.inRed()}.")
+        if (previousPhrase.isNotEmpty() && anagrams.contains(previousPhrase)) {
+            val otherPhrases = anagrams.filter { it != previousPhrase }
+            if (otherPhrases.isEmpty()) {
+                println("${phrase.inGreen()} is an anagram of ${previousPhrase.inGreen()} ${Emojis.party}")
+            } else {
+                println("${phrase.inGreen()} is an anagram of ${previousPhrase.inGreen()} as well as " +
+                        "(${otherPhrases.joinToString(separator = ";").inGreen()}) entered earlier ${Emojis.party}")
             }
+        } else if (anagrams.isNotEmpty()) {
+            println("${phrase.inGreen()} is an anagram of (${anagrams.joinToString(separator = ";").inGreen()}) " +
+                    "entered earlier ${Emojis.party}")
+        } else if (previousPhrase.isNotEmpty()) {
+            println("${phrase.inRed()} is not an anagram of ${previousPhrase.inRed()}.")
+        }
 
-            if (previousPhrase.isBlank()) {
-                previousPhrase = phrase
-            }
+        if (previousPhrase.isBlank()) {
+            previousPhrase = phrase
         }
     }
 }

@@ -10,7 +10,8 @@ object AnagramService {
     private val history: HashMap<String, MutableSet<String>> = HashMap()
 
     fun sanitizePhrase(phrase: String): String {
-        return phrase.replace(PHRASE_SANITIZE_REGEX, "")
+        //We lowercase the input to avoid having the same phrase added to history with a different case.
+        return phrase.replace(PHRASE_SANITIZE_REGEX, "").lowercase()
     }
 
     fun validatePhrase(phrase: String) {
@@ -25,7 +26,7 @@ object AnagramService {
 
     fun getAnagramsOfSubject(subject: Subject): List<String> {
         val (phrase, signature) = subject
-        return history[signature]?.filter { it.lowercase() != phrase.lowercase() }?.distinctBy { it.lowercase() } ?: emptyList()
+        return history[signature]?.filter { it.lowercase() != phrase.lowercase() } ?: emptyList()
     }
 
     fun addToHistory(subject: Subject) {
