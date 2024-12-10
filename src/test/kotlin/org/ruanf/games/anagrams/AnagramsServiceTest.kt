@@ -2,8 +2,6 @@ package org.ruanf.games.anagrams
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import org.ruanf.games.anagrams.AnagramService
-import org.ruanf.games.anagrams.Subject
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -18,6 +16,7 @@ class AnagramsServiceTest {
 
     companion object {
         @JvmStatic
+        @Suppress("detekt:UnusedPrivateMember")
         private fun signatureTestCaseProvider(): Stream<SignatureTestCase>? {
             return Stream.of(
                 SignatureTestCase("Ac b ", "abc"),
