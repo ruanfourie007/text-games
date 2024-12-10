@@ -1,9 +1,9 @@
-package org.ruanf.anagrams
+package org.ruanf.games.anagrams
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import org.ruanf.games.AnagramService
-import org.ruanf.games.Subject
+import org.ruanf.games.anagrams.AnagramService
+import org.ruanf.games.anagrams.Subject
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
