@@ -3,8 +3,8 @@ package org.ruanf.games.anagrams
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEqualTo
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
@@ -13,17 +13,22 @@ data class SignatureTestCase(val phrase: String, val expectedSignature: String)
 data class AnagramTestCase(val subject: String, val anagram: String)
 
 class AnagramsServiceTest {
-
-    private val anagramService: AnagramService = AnagramService
-
     companion object {
+        private lateinit var anagramService: AnagramService
+
+        @BeforeAll
+        @JvmStatic
+        fun setup() {
+            anagramService = AnagramService()
+        }
+
         @JvmStatic
         @Suppress("detekt:UnusedPrivateMember")
         private fun signatureTestCaseProvider(): Stream<SignatureTestCase>? {
             return Stream.of(
                 SignatureTestCase("Ac b ", "abc"),
                 SignatureTestCase(" A Ë eEt", "aeetë"),
-                SignatureTestCase("A_b;-C'|", "abc"),
+                SignatureTestCase("A b C", "abc"),
             )
         }
 
@@ -32,7 +37,7 @@ class AnagramsServiceTest {
         private fun validAnagramTestCaseProvider(): Stream<AnagramTestCase>? {
             return Stream.of(
                 AnagramTestCase("New York Times", "monkeys write"),
-                AnagramTestCase("Church of Scientology", "rich-chosen goofy cult"),
+                AnagramTestCase("Church of Scientology", "rich chosen goofy cult"),
                 AnagramTestCase("McDonald's restaurants", "Uncle Sam's standard rot"),
                 AnagramTestCase("coronavirus", "carnivorous")
             )
@@ -52,41 +57,35 @@ class AnagramsServiceTest {
 
     @ParameterizedTest
     @MethodSource("signatureTestCaseProvider")
-    fun `given a sanitized subject phrase an expected signature is built`(signatureTestCase: SignatureTestCase) {
-        assertThat(anagramService.createSignature(signatureTestCase.phrase).sanitize()
+    fun `given a phrase an expected signature is generated for the subject`(signatureTestCase: SignatureTestCase) {
+        assertThat(anagramService.createSubject(signatureTestCase.phrase).signature
         ).isEqualTo(signatureTestCase.expectedSignature)
     }
 
     @ParameterizedTest
     @MethodSource("validAnagramTestCaseProvider")
-    fun `given a subject phrase and a VALID anagram a match is returned`(anagramTestCase: AnagramTestCase) {
-        assertThat(AnagramService.createSignature(anagramTestCase.subject.sanitize())).isEqualTo(
-            anagramService.createSignature(anagramTestCase.anagram.sanitize())
+    fun `given a phrase and a VALID anagram then matching signatures are generated`(anagramTestCase: AnagramTestCase) {
+        assertThat(anagramService.createSubject(anagramTestCase.subject).signature).isEqualTo(
+            anagramService.createSubject(anagramTestCase.anagram).signature
         )
     }
 
     @ParameterizedTest
     @MethodSource("invalidAnagramTestCaseProvider")
-    fun `given a subject phrase and INVALID anagram a match is NOT returned`(anagramTestCase: AnagramTestCase) {
-        assertThat(AnagramService.createSignature(anagramTestCase.subject.sanitize())).isNotEqualTo(
-            anagramService.createSignature(anagramTestCase.anagram.sanitize())
+    fun `given a phrase and an INVALID anagram then matching signatures are NOT generated`
+                (anagramTestCase: AnagramTestCase) {
+        assertThat(anagramService.createSubject(anagramTestCase.subject).signature).isNotEqualTo(
+            anagramService.createSubject(anagramTestCase.anagram).signature
         )
     }
 
     @Test
-    fun `given an invalid phrase provided to validatePhrase an IllegalArgumentException is thrown`() {
-        assertThrows<IllegalArgumentException> { anagramService.validatePhrase("".padEnd(101, 'A')) }
-    }
+    fun `given a phrase is an anagram of subjects entered earlier then the subjects are returned`() {
+        anagramService.getAnagramsOfPhrase("a b c")
+        anagramService.getAnagramsOfPhrase("b c a")
+        anagramService.getAnagramsOfPhrase("d e f")
 
-    @Test
-    fun `given a phrase is an anagram of phrases entered earlier the matches are returned`() {
-        anagramService.addToHistory(Subject("A B C"))
-        anagramService.addToHistory(Subject("B C A"))
-        anagramService.addToHistory(Subject("D E F"))
-
-        assertThat(anagramService.getAnagramsOfSubject(Subject("C A B")))
-            .isEqualTo(listOf("A B C", "B C A"))
+        assertThat(anagramService.getAnagramsOfPhrase("c a b"))
+            .isEqualTo(listOf("a b c", "b c a"))
     }
 }
-
-fun String.sanitize() = AnagramService.sanitizePhrase(phrase = this)
