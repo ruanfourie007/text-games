@@ -5,7 +5,7 @@ data class Subject(val phrase: String, val signature: String)
 class AnagramService {
     companion object {
         private val PHRASE_SANITIZE_REGEX = "[\\p{P}\\p{S}]".toRegex()
-        private const val MAX_PHRASE_LENGTH = 3
+        private const val MAX_PHRASE_LENGTH = 100
 
         private val repository = AnagramRepository()
     }
